@@ -95,6 +95,13 @@ def retrieve_and_generate(input, knowledge_base_id, model_arn):
 
     return response
 
+def retrieve_and_generate_response(predicted_class, user_query):
+
+    response = retrieve_and_generate(f'Tea Leaf Sickness Classification Result: {predicted_class}. {user_query}', knowledge_base_id=knowledge_base_id, model_arn=model_arn)
+    generated_response = response['output']['text']
+
+    return generated_response
+
 def model(image_path):
 
     predicted_class, confidence = predict(image_path)

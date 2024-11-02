@@ -12,7 +12,9 @@ import flet as ft
 from flet import AppBar, CupertinoFilledButton, Page, Container, Text, View, FontWeight, colors, TextButton, padding, ThemeMode, border_radius, Image as FletImage, FilePicker, FilePickerResultEvent, icons
 
 from image_classifier.resnet50_archi import resnet50
-from main import predict
+from main import predict, retrieve_and_generate_response, ref_class_names
+
+first_prompt_entered = True
 
 def main(page: Page):
     page.title = "Botani"
@@ -39,7 +41,7 @@ def main(page: Page):
                 predicted_class, confidence = predict(image_path)
                 conf_converted = confidence * 100
                 
-                result_pred.value = f"Prediction: {predicted_class}"
+                result_pred.value = f"Prediction: {ref_class_names.get(predicted_class)}"
                 result_conf.value = f"[{conf_converted:.2f}% Confident]"
                 result_image.src = image_path
                 prompt_container.visible = True  # Show prompt field upon image selection
@@ -68,14 +70,18 @@ def main(page: Page):
         result_image.visible = False
         select_image.visible = True
         restart_button.visible = False
-        prompt_display.value = "LLM will respond here."
+        prompt_display.content.controls[-1].value = ""
+        prompt_input.value = ""
         prompt_container.visible = False  # Hide prompt field on reset
+
         result_pred.update()
         result_conf.update()
-        prompt_container.update()
         restart_button.update()
         result_image.update()
         select_image.update()
+        prompt_input.update()
+        prompt_display.update()
+        prompt_container.update()
 
     file_picker = FilePicker(on_result=process_image)
     selected_files = Text()
@@ -95,30 +101,34 @@ def main(page: Page):
 
     prompt_text = Text("Enter prompt:", font_family="RobotoMono", size=16, weight=FontWeight.W_300, color="#cbddd1")
     prompt_input = ft.TextField(
-        hint_text="Type your prompt here", 
-        width=350, 
-        on_submit=lambda e: generating_effect()
+        hint_text="Type your prompt here",
+        width=350,
+        on_submit=lambda e: generating_response()
     )
+
     #prompt_display = Text("LLM will respond here.", size=16, font_family="RobotoMono", weight=FontWeight.W_300, color="#cbddd1")
     prompt_display = Container(
         height = 450,
         content=ft.Column(scroll="auto")
     )
+
     prompt_container = Container(content=ft.Column([prompt_text, prompt_input, prompt_display]), visible=False)  # Initially hidden
 
-    def generating_effect():
+    def generating_response():
+        global first_prompt_entered
 
-        input_text = prompt_input.value
-        type_speed = 0.02
+        input_text = retrieve_and_generate_response(result_pred.value, prompt_input.value)
+        type_speed = 0.001
 
-        prompt_display.content.controls.append(Text("", size=14, font_family="RobotoMono", weight=FontWeight.W_300, color="#cbddd1"))
-        prompt_display.update()
+        if first_prompt_entered:
+            prompt_display.content.controls.append(Text("", size=14, font_family="RobotoMono", weight=FontWeight.W_300, color="#cbddd1"))
+            prompt_display.update()
+            first_prompt_entered = False
 
         for char in input_text:
             prompt_display.content.controls[-1].value += char
             prompt_display.update()
             time.sleep(type_speed)
-
 
     def route_change(e):
         page.views.clear()
