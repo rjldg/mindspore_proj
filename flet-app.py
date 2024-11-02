@@ -13,24 +13,9 @@ from flet import AppBar, CupertinoFilledButton, Page, Container, Text, View, Fon
 from image_classifier.resnet50_archi import resnet50
 from main import predict
 
-cfg = {
-    'HEIGHT': 224,
-    'WIDTH': 224,
-    '_R_MEAN': 123.68,
-    '_G_MEAN': 116.78,
-    '_B_MEAN': 103.94,
-    '_R_STD': 1,
-    '_G_STD': 1,
-    '_B_STD': 1,
-    'num_class': 2,
-    'model_path': '../../best_model.ckpt'
-}
-
-class_names = {0:'algal_leaf',1:'anthracnose',2:'bird_eye_spot',3:'brown_blight',4:'gray_light',5:'healthy',6:'red_leaf_spot',7:'white_spot'}
-
 def main(page: Page):
-    page.title = "SpotumAI"
-    page.theme_mode = ThemeMode.LIGHT
+    page.title = "Botani"
+    page.theme_mode = ThemeMode.DARK
 
     page.fonts = {
         "RobotoFlex": f"fonts/RobotoFlex-VariableFont.ttf",
@@ -98,7 +83,7 @@ def main(page: Page):
     
     page.overlay.append(file_picker)
 
-    restart_button = TextButton(content=Text("Start over", font_family="RobotoMono", size=14, weight=FontWeight.W_300, color=colors.BLACK), visible=False, on_click=restart_process)
+    restart_button = TextButton(content=Text("Start over", font_family="RobotoMono", size=14, weight=FontWeight.W_300, color="#cbddd1"), visible=False, on_click=restart_process)
     
     result_pred = Text(size=40, font_family="RobotoFlex", weight=FontWeight.W_700)
     result_conf = Text(size=24, font_family="RobotoMono", weight=FontWeight.W_500)
@@ -112,34 +97,36 @@ def main(page: Page):
             View(
                 "/",
                 [
-                    AppBar(title_spacing=50, title=Text("Botani", font_family="RobotoFlex", size=40, weight=FontWeight.W_700, color=colors.BLACK), bgcolor="#f8f9ff", toolbar_height=120,
+                    AppBar(title_spacing=50, title=Text("Botani", font_family="RobotoFlex", size=40, weight=FontWeight.W_700, color="#cbddd1"), bgcolor="#141d1f", toolbar_height=120,
                            actions=[
-                               TextButton(content=Container(Text("GitHub", font_family="RobotoFlex", size=18, weight=FontWeight.W_400, color=colors.BLACK), padding=padding.only(right=25, left=25)), url="https://github.com/rjldg/mindspore_proj"),
-                               TextButton(content=Container(Text("About Us", font_family="RobotoFlex", size=18, weight=FontWeight.W_400, color=colors.BLACK), padding=padding.only(right=25, left=25)), on_click=lambda _: page.go("/aboutus"))
+                               TextButton(content=Container(Text("GitHub", font_family="RobotoFlex", size=18, weight=FontWeight.W_400, color="#cbddd1"), padding=padding.only(right=25, left=25)), url="https://github.com/rjldg/mindspore_proj"),
+                               TextButton(content=Container(Text("About Us", font_family="RobotoFlex", size=18, weight=FontWeight.W_400, color="#cbddd1"), padding=padding.only(right=25, left=25)), on_click=lambda _: page.go("/aboutus"))
                            ]
                     ),
                     Container(
                         content=ft.Column(
                             [
-                                Text("DETECT TEA LEAF SICKNESS\nUSING ARTIFICIAL INTELLIGENCE", font_family="RobotoFlex", size=40, weight=FontWeight.W_800, color=colors.BLACK),
-                                Text("Your AI-powered ally in detecting\ntea leaf sickness from images\nwith impressively satisfactory accuracy!", font_family="RobotoMono", size=20, weight=FontWeight.W_300, color=colors.BLACK),
+                                Text("DETECT TEA LEAF SICKNESS\nUSING ARTIFICIAL INTELLIGENCE", font_family="RobotoFlex", size=40, weight=FontWeight.W_800, color="#cbddd1"),
+                                Text("Your tea leaf health companion, powered by AI.", font_family="RobotoMono", size=20, weight=FontWeight.W_500, color="#cbddd1"),
+                                Text("Featured Models: MindSpore ResNet-50 and AWS Titan", font_family="RobotoMono", size=14, weight=FontWeight.W_300, color="#cbddd1"),
                             ]
                         ),
                         padding=padding.only(left=100, top=70)
                     ),
                     Container(
-                        CupertinoFilledButton(content=Text("Get Started", font_family="RobotoFlex", size=18, weight=FontWeight.W_500, color=colors.WHITE), border_radius=border_radius.all(8), on_click=lambda _: page.go("/spotumapp")),
-                        padding=padding.only(left=100, top=70)
+                        #CupertinoFilledButton(content=Text("Get Started", font_family="RobotoFlex", size=18, weight=FontWeight.W_500, color="#cbddd1"), border_radius=border_radius.all(8), on_click=lambda _: page.go("/botani")),
+                        ft.ElevatedButton(content=Text("Get Started", font_family="RobotoFlex", size=18, weight=FontWeight.W_500, color="#cbddd1"), on_click=lambda _: page.go("/botani")),
+                        padding=padding.only(left=100, top=70),
                     )
                 ],
             )
         )
-        if page.route == "/spotumapp":
+        if page.route == "/botani":
             page.views.append(
                 View(
-                    "/spotumapp",
+                    "/botani",
                     [
-                        AppBar(color=colors.BLACK, bgcolor="#f8f9ff"),
+                        AppBar(color="#cbddd1", bgcolor="#141d1f"),
                         Container(
                             content=ft.Row(
                                 [
@@ -167,9 +154,9 @@ def main(page: Page):
                 View(
                     "/aboutus",
                     [
-                        AppBar(color=colors.BLACK, bgcolor="#f8f9ff"),
+                        AppBar(color="#cbddd1", bgcolor="#141d1f"),
                         Container(
-                            Text("MEET THE TEAM", font_family="RobotoFlex", size=40, weight=FontWeight.W_700, color=colors.BLACK),
+                            Text("MEET THE TEAM", font_family="RobotoFlex", size=40, weight=FontWeight.W_700, color="#cbddd1"),
                             padding=padding.only(left=100)
                         ),
                         Container(
@@ -177,11 +164,11 @@ def main(page: Page):
                                 [
                                     ft.Row(
                                         [
-                                            ft.Image(src="assets/rance.png"),
+                                            ft.Image(src="assets/aaron.png"),
                                             Container(content=ft.Column(
                                                 [
-                                                    Text("Aaron Abadiano", font_family="RobotoFlex", size=20, weight=FontWeight.W_600, color=colors.BLACK),
-                                                    Text("ababadiano@mymail.mapua.edu.ph", font_family="RobotoMono", size=16, weight=FontWeight.W_300, color=colors.BLACK),
+                                                    Text("Aaron Abadiano", font_family="RobotoFlex", size=20, weight=FontWeight.W_600, color="#cbddd1"),
+                                                    Text("ababadiano@mymail.mapua.edu.ph", font_family="RobotoMono", size=16, weight=FontWeight.W_300, color="#cbddd1"),
                                                 ]
                                             )
                                             ),
@@ -189,11 +176,11 @@ def main(page: Page):
                                     ),
                                     ft.Row(
                                         [
-                                            ft.Image(src="assets/rance.png"),
+                                            ft.Image(src="assets/clara.png"),
                                             Container(content=ft.Column(
                                                 [
-                                                    Text("Clara Capistrano", font_family="RobotoFlex", size=20, weight=FontWeight.W_600, color=colors.BLACK),
-                                                    Text("cascapistrano@mymail.mapua.edu.ph", font_family="RobotoMono", size=16, weight=FontWeight.W_300, color=colors.BLACK),
+                                                    Text("Clara Capistrano", font_family="RobotoFlex", size=20, weight=FontWeight.W_600, color="#cbddd1"),
+                                                    Text("cascapistrano@mymail.mapua.edu.ph", font_family="RobotoMono", size=16, weight=FontWeight.W_300, color="#cbddd1"),
                                                 ]
                                             )
                                             ),
@@ -201,11 +188,11 @@ def main(page: Page):
                                     ),
                                     ft.Row(
                                         [
-                                            ft.Image(src="assets/rance.png"),
+                                            ft.Image(src="assets/rance_new.png"),
                                             Container(content=ft.Column(
                                                 [
-                                                    Text("Rance De Guzman", font_family="RobotoFlex", size=20, weight=FontWeight.W_600, color=colors.BLACK),
-                                                    Text("rjldeguzman@mymail.mapua.edu.ph", font_family="RobotoMono", size=16, weight=FontWeight.W_300, color=colors.BLACK),
+                                                    Text("Rance De Guzman", font_family="RobotoFlex", size=20, weight=FontWeight.W_600, color="#cbddd1"),
+                                                    Text("rjldeguzman@mymail.mapua.edu.ph", font_family="RobotoMono", size=16, weight=FontWeight.W_300, color="#cbddd1"),
                                                 ]
                                             )
                                             ),
