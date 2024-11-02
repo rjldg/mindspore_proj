@@ -39,28 +39,25 @@ def main(page: Page):
                 conf_converted = confidence * 100
                 
                 result_pred.value = f"Prediction: {predicted_class}"
-                result_conf.value = f"[{conf_converted:.2f} Confident]"
+                result_conf.value = f"[{conf_converted:.2f}% Confident]"
                 result_image.src = image_path
+                prompt_container.visible = True  # Show prompt field upon image selection
 
-                if predicted_class == "Normal":
-                    result_pred.color = "green"
-                else:
-                    result_pred.color = "red"
-                
-                if confidence > 0.8:
-                    result_conf.color = "green"
-                elif confidence > 0.5:
-                    result_conf.color = "orange"
-                else:
-                    result_conf.color = "red"
-                
-                result.disabled = True
+                # Set color based on prediction
+                result_pred.color = "green" if predicted_class == "Normal" else "red"
+                result_conf.color = "green" if confidence > 0.8 else "orange" if confidence > 0.5 else "red"
+
+                #result.disabled = True
+                result_image.visible = True
+                select_image.visible = False
                 restart_button.visible = True
                 result_pred.update()
                 result_conf.update()
+                prompt_container.update()
                 restart_button.update()
-                result.update()
-
+                result_image.update()
+                select_image.update()
+                #result.update()
             else:
                 result_pred.value = f"Error: File '{image_path}' does not exist."
                 result_pred.update()
@@ -69,14 +66,19 @@ def main(page: Page):
     def restart_process(e):
         result_pred.value = ""
         result_conf.value = ""
-        result_image.src = "assets/result_initial.png"
-        result.disabled = False
+        #result_image.src = "assets/result_initial_new.png"
+        result_image.visible = False
+        select_image.visible = True
+        #result.disabled = False
         restart_button.visible = False
+        prompt_container.visible = False  # Hide prompt field on reset
         result_pred.update()
         result_conf.update()
+        prompt_container.update()
         restart_button.update()
-        result.update()
-        # print("RESTARTED")
+        result_image.update()
+        select_image.update()
+        #result.update()
 
     file_picker = FilePicker(on_result=process_image)
     selected_files = Text()
@@ -85,11 +87,20 @@ def main(page: Page):
 
     restart_button = TextButton(content=Text("Start over", font_family="RobotoMono", size=14, weight=FontWeight.W_300, color="#cbddd1"), visible=False, on_click=restart_process)
     
-    result_pred = Text(size=40, font_family="RobotoFlex", weight=FontWeight.W_700)
-    result_conf = Text(size=24, font_family="RobotoMono", weight=FontWeight.W_500)
-    result_image = ft.Image(src="assets/result_initial.png", width=350, height=350, border_radius=border_radius.all(10))
+    result_pred = Text(size=30, font_family="RobotoFlex", weight=FontWeight.W_700)
+    result_conf = Text(size=20, font_family="RobotoMono", weight=FontWeight.W_500)
+    initial_image = ft.Image(src="assets/result_initial_new.png", width=350, height=350, border_radius=border_radius.all(10))
+    result_image = ft.Image(src="assets/result_initial_new.png", width=350, height=350, border_radius=border_radius.all(10), fit=ft.ImageFit.FILL)
+    result_image.visible = False
 
-    result = TextButton(content=result_image, on_click=lambda _: file_picker.pick_files(allow_multiple=False))
+    #result = TextButton(content=result_image, on_click=lambda _: file_picker.pick_files(allow_multiple=False))
+    select_image = TextButton(content=initial_image, on_click=lambda _: file_picker.pick_files(allow_multiple=False))
+
+    # Prompt input and display container
+    prompt_text = Text("Enter prompt:", font_family="RobotoMono", size=16, weight=FontWeight.W_300, color="#cbddd1")
+    prompt_input = ft.TextField(hint_text="Type your prompt here", width=350, on_submit=lambda e: prompt_display.update())
+    prompt_display = Text("Prompt response will display here", size=16, font_family="RobotoMono", weight=FontWeight.W_300, color="#cbddd1")
+    prompt_container = Container(content=ft.Column([prompt_text, prompt_input, prompt_display]), visible=False)  # Initially hidden
 
     def route_change(e):
         page.views.clear()
@@ -114,13 +125,13 @@ def main(page: Page):
                         padding=padding.only(left=100, top=70)
                     ),
                     Container(
-                        #CupertinoFilledButton(content=Text("Get Started", font_family="RobotoFlex", size=18, weight=FontWeight.W_500, color="#cbddd1"), border_radius=border_radius.all(8), on_click=lambda _: page.go("/botani")),
                         ft.ElevatedButton(content=Text("Get Started", font_family="RobotoFlex", size=18, weight=FontWeight.W_500, color="#cbddd1"), on_click=lambda _: page.go("/botani")),
                         padding=padding.only(left=100, top=70),
                     )
                 ],
             )
         )
+        
         if page.route == "/botani":
             page.views.append(
                 View(
@@ -130,21 +141,31 @@ def main(page: Page):
                         Container(
                             content=ft.Row(
                                 [
-                                    result,
+                                    # Left column with image, prediction, confidence, and restart button
                                     Container(
                                         content=ft.Column(
                                             [
+                                                result_image,
                                                 result_pred,
                                                 result_conf,
                                                 restart_button,
-                                            ]
-                                        )
-                                    )
+                                            ],
+                                            alignment=ft.MainAxisAlignment.CENTER,
+                                        ),
+                                        width=400,
+                                        padding=padding.only(left=10, top=10)
+                                    ),
+                                    select_image,
+                                    # Right column with prompt input and display
+                                    Container(
+                                        content=prompt_container,
+                                        width=400,
+                                        padding=padding.only(left=10, top=10)
+                                    ),
                                 ],
                                 alignment=ft.MainAxisAlignment.CENTER,
-                                spacing=10
+                                spacing=50
                             ),
-                            padding=padding.only(top=100)
                         ),
                     ],
                 )
