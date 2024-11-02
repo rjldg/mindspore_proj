@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import mindspore as ms
+import time
 
 from mindspore import Tensor
 from mindspore.train import Model
@@ -96,14 +97,28 @@ def main(page: Page):
     prompt_input = ft.TextField(
         hint_text="Type your prompt here", 
         width=350, 
-        on_submit=lambda e: display_prompt_response()
+        on_submit=lambda e: generating_effect()
     )
-    prompt_display = Text("LLM will respond here.", size=16, font_family="RobotoMono", weight=FontWeight.W_300, color="#cbddd1")
+    #prompt_display = Text("LLM will respond here.", size=16, font_family="RobotoMono", weight=FontWeight.W_300, color="#cbddd1")
+    prompt_display = Container(
+        height = 450,
+        content=ft.Column(scroll="auto")
+    )
     prompt_container = Container(content=ft.Column([prompt_text, prompt_input, prompt_display]), visible=False)  # Initially hidden
 
-    def display_prompt_response():
-        prompt_display.value = "This is a placeholder response for your prompt."
+    def generating_effect():
+
+        input_text = prompt_input.value
+        type_speed = 0.02
+
+        prompt_display.content.controls.append(Text("", size=14, font_family="RobotoMono", weight=FontWeight.W_300, color="#cbddd1"))
         prompt_display.update()
+
+        for char in input_text:
+            prompt_display.content.controls[-1].value += char
+            prompt_display.update()
+            time.sleep(type_speed)
+
 
     def route_change(e):
         page.views.clear()
@@ -156,7 +171,7 @@ def main(page: Page):
                                             alignment=ft.MainAxisAlignment.CENTER,
                                         ),
                                         width=400,
-                                        padding=padding.only(left=10, top=50)
+                                        padding=padding.only(left=10, top=25)
                                     ),
                                     Container(
                                         select_image,
@@ -166,7 +181,7 @@ def main(page: Page):
                                     Container(
                                         content=prompt_container,
                                         width=400,
-                                        padding=padding.only(left=10, top=10, bottom=250)
+                                        padding=padding.only(left=10, top=25)
                                     ),
                                 ],
                                 alignment=ft.MainAxisAlignment.CENTER,
