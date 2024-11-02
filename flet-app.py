@@ -44,9 +44,8 @@ def main(page: Page):
                 result_pred.value = f"Prediction: {ref_class_names.get(predicted_class)}"
                 result_conf.value = f"[{conf_converted:.2f}% Confident]"
                 result_image.src = image_path
-                prompt_container.visible = True  # Show prompt field upon image selection
+                prompt_container.visible = True
 
-                # Set color based on prediction
                 result_pred.color = "green" if predicted_class == "Normal" else "red"
                 result_conf.color = "green" if confidence > 0.8 else "orange" if confidence > 0.5 else "red"
 
@@ -72,7 +71,7 @@ def main(page: Page):
         restart_button.visible = False
         prompt_display.content.controls[-1].value = ""
         prompt_input.value = ""
-        prompt_container.visible = False  # Hide prompt field on reset
+        prompt_container.visible = False
 
         result_pred.update()
         result_conf.update()
@@ -112,7 +111,7 @@ def main(page: Page):
         content=ft.Column(scroll="auto")
     )
 
-    prompt_container = Container(content=ft.Column([prompt_text, prompt_input, prompt_display]), visible=False)  # Initially hidden
+    prompt_container = Container(content=ft.Column([prompt_text, prompt_input, prompt_display]), visible=False)
 
     def generating_response():
         global first_prompt_entered
@@ -169,7 +168,6 @@ def main(page: Page):
                         Container(
                             content=ft.Row(
                                 [
-                                    # Left column with image, prediction, confidence, and restart button
                                     Container(
                                         content=ft.Column(
                                             [
@@ -187,7 +185,6 @@ def main(page: Page):
                                         select_image,
                                         padding=padding.only(top=100)
                                     ),
-                                    # Right column with prompt input and display
                                     Container(
                                         content=prompt_container,
                                         width=400,
