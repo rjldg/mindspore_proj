@@ -109,10 +109,11 @@ def model(image_path):
     plt.axis('off')
     plt.show()
 
-    print("Generating Response...\n")
+    user_query = input(str("Enter prompt: "))
+    print('\n')
 
     # RAG Foundation Model Text Output
-    response = retrieve_and_generate(f'List all the information about this tea sickness based from your knowledge base extensively and in great detail: {ref_class_names.get(predicted_class)}', knowledge_base_id=knowledge_base_id, model_arn=model_arn)
+    response = retrieve_and_generate(f'Classification: {ref_class_names.get(predicted_class)}. {user_query}', knowledge_base_id=knowledge_base_id, model_arn=model_arn)
     generated_response = response['output']['text']
     print(generated_response)
 
