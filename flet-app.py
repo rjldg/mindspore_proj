@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import mindspore as ms
+
 from mindspore import Tensor
 from mindspore.train import Model
 from mindspore.train.serialization import load_checkpoint, load_param_into_net
@@ -9,7 +10,8 @@ from PIL import Image
 import flet as ft
 from flet import AppBar, CupertinoFilledButton, Page, Container, Text, View, FontWeight, colors, TextButton, padding, ThemeMode, border_radius, Image as FletImage, FilePicker, FilePickerResultEvent, icons
 
-from resnet50_arch import resnet50
+from image_classifier.resnet50_archi import resnet50
+from main import predict
 
 cfg = {
     'HEIGHT': 224,
@@ -24,32 +26,7 @@ cfg = {
     'model_path': '../../best_model.ckpt'
 }
 
-class_names = {0: 'Normal', 1: 'Tuberculosis'}
-
-def preprocess_image(image_path):
-    image = Image.open(image_path).convert('RGB')
-    image = image.resize((cfg['WIDTH'], cfg['HEIGHT']))
-    image = np.array(image).astype(np.float32)
-    image = (image - [cfg['_R_MEAN'], cfg['_G_MEAN'], cfg['_B_MEAN']]) / [cfg['_R_STD'], cfg['_G_STD'], cfg['_B_STD']]
-    image = np.transpose(image, (2, 0, 1))
-    image = np.expand_dims(image, axis=0)
-    return Tensor(image, ms.float32)
-
-def load_model():
-    net = resnet50(class_num=cfg['num_class'])
-    param_dict = load_checkpoint(cfg['model_path'])
-    load_param_into_net(net, param_dict)
-    model = Model(net)
-    return model
-
-def predict(image_path):
-    image = preprocess_image(image_path)
-    model = load_model()
-    output = model.predict(image)
-    softmax = Softmax()
-    probabilities = softmax(output).asnumpy()
-    predicted_class = np.argmax(probabilities, axis=1)[0]
-    return class_names[predicted_class], probabilities[0][predicted_class]
+class_names = {0:'algal_leaf',1:'anthracnose',2:'bird_eye_spot',3:'brown_blight',4:'gray_light',5:'healthy',6:'red_leaf_spot',7:'white_spot'}
 
 def main(page: Page):
     page.title = "SpotumAI"
@@ -135,17 +112,17 @@ def main(page: Page):
             View(
                 "/",
                 [
-                    AppBar(title_spacing=50, title=Text("Spotum", font_family="RobotoFlex", size=40, weight=FontWeight.W_700, color=colors.BLACK), bgcolor="#f8f9ff", toolbar_height=120,
+                    AppBar(title_spacing=50, title=Text("Botani", font_family="RobotoFlex", size=40, weight=FontWeight.W_700, color=colors.BLACK), bgcolor="#f8f9ff", toolbar_height=120,
                            actions=[
-                               TextButton(content=Container(Text("GitHub", font_family="RobotoFlex", size=18, weight=FontWeight.W_400, color=colors.BLACK), padding=padding.only(right=25, left=25)), url="https://github.com/dipindi/spotum"),
+                               TextButton(content=Container(Text("GitHub", font_family="RobotoFlex", size=18, weight=FontWeight.W_400, color=colors.BLACK), padding=padding.only(right=25, left=25)), url="https://github.com/rjldg/mindspore_proj"),
                                TextButton(content=Container(Text("About Us", font_family="RobotoFlex", size=18, weight=FontWeight.W_400, color=colors.BLACK), padding=padding.only(right=25, left=25)), on_click=lambda _: page.go("/aboutus"))
                            ]
                     ),
                     Container(
                         content=ft.Column(
                             [
-                                Text("REVOLUTIONIZE TUBERCULOSIS\nDETECTION WITH AI", font_family="RobotoFlex", size=40, weight=FontWeight.W_800, color=colors.BLACK),
-                                Text("Your AI-powered ally in detecting\ntuberculosis from X-ray images\nwith an impressive 98% accuracy", font_family="RobotoMono", size=20, weight=FontWeight.W_300, color=colors.BLACK),
+                                Text("DETECT TEA LEAF SICKNESS\nUSING ARTIFICIAL INTELLIGENCE", font_family="RobotoFlex", size=40, weight=FontWeight.W_800, color=colors.BLACK),
+                                Text("Your AI-powered ally in detecting\ntea leaf sickness from images\nwith impressively satisfactory accuracy!", font_family="RobotoMono", size=20, weight=FontWeight.W_300, color=colors.BLACK),
                             ]
                         ),
                         padding=padding.only(left=100, top=70)
@@ -203,32 +180,32 @@ def main(page: Page):
                                             ft.Image(src="assets/rance.png"),
                                             Container(content=ft.Column(
                                                 [
+                                                    Text("Aaron Abadiano", font_family="RobotoFlex", size=20, weight=FontWeight.W_600, color=colors.BLACK),
+                                                    Text("ababadiano@mymail.mapua.edu.ph", font_family="RobotoMono", size=16, weight=FontWeight.W_300, color=colors.BLACK),
+                                                ]
+                                            )
+                                            ),
+                                        ]
+                                    ),
+                                    ft.Row(
+                                        [
+                                            ft.Image(src="assets/rance.png"),
+                                            Container(content=ft.Column(
+                                                [
+                                                    Text("Clara Capistrano", font_family="RobotoFlex", size=20, weight=FontWeight.W_600, color=colors.BLACK),
+                                                    Text("cascapistrano@mymail.mapua.edu.ph", font_family="RobotoMono", size=16, weight=FontWeight.W_300, color=colors.BLACK),
+                                                ]
+                                            )
+                                            ),
+                                        ]
+                                    ),
+                                    ft.Row(
+                                        [
+                                            ft.Image(src="assets/rance.png"),
+                                            Container(content=ft.Column(
+                                                [
                                                     Text("Rance De Guzman", font_family="RobotoFlex", size=20, weight=FontWeight.W_600, color=colors.BLACK),
                                                     Text("rjldeguzman@mymail.mapua.edu.ph", font_family="RobotoMono", size=16, weight=FontWeight.W_300, color=colors.BLACK),
-                                                ]
-                                            )
-                                            ),
-                                        ]
-                                    ),
-                                    ft.Row(
-                                        [
-                                            ft.Image(src="assets/reji.png"),
-                                            Container(content=ft.Column(
-                                                [
-                                                    Text("Reji Capoquian", font_family="RobotoFlex", size=20, weight=FontWeight.W_600, color=colors.BLACK),
-                                                    Text("rtcapoquian@mymail.mapua.edu.ph", font_family="RobotoMono", size=16, weight=FontWeight.W_300, color=colors.BLACK),
-                                                ]
-                                            )
-                                            ),
-                                        ]
-                                    ),
-                                    ft.Row(
-                                        [
-                                            ft.Image(src="assets/mico.png"),
-                                            Container(content=ft.Column(
-                                                [
-                                                    Text("Mico Malatag", font_family="RobotoFlex", size=20, weight=FontWeight.W_600, color=colors.BLACK),
-                                                    Text("mkpmalatag@mymail.mapua.edu.ph", font_family="RobotoMono", size=16, weight=FontWeight.W_300, color=colors.BLACK),
                                                 ]
                                             )
                                             ),
