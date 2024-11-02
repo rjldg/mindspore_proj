@@ -47,7 +47,6 @@ def main(page: Page):
                 result_pred.color = "green" if predicted_class == "Normal" else "red"
                 result_conf.color = "green" if confidence > 0.8 else "orange" if confidence > 0.5 else "red"
 
-                #result.disabled = True
                 result_image.visible = True
                 select_image.visible = False
                 restart_button.visible = True
@@ -57,7 +56,6 @@ def main(page: Page):
                 restart_button.update()
                 result_image.update()
                 select_image.update()
-                #result.update()
             else:
                 result_pred.value = f"Error: File '{image_path}' does not exist."
                 result_pred.update()
@@ -66,11 +64,10 @@ def main(page: Page):
     def restart_process(e):
         result_pred.value = ""
         result_conf.value = ""
-        #result_image.src = "assets/result_initial_new.png"
         result_image.visible = False
         select_image.visible = True
-        #result.disabled = False
         restart_button.visible = False
+        prompt_display.value = "LLM will respond here."
         prompt_container.visible = False  # Hide prompt field on reset
         result_pred.update()
         result_conf.update()
@@ -78,7 +75,6 @@ def main(page: Page):
         restart_button.update()
         result_image.update()
         select_image.update()
-        #result.update()
 
     file_picker = FilePicker(on_result=process_image)
     selected_files = Text()
@@ -89,18 +85,25 @@ def main(page: Page):
     
     result_pred = Text(size=30, font_family="RobotoFlex", weight=FontWeight.W_700)
     result_conf = Text(size=20, font_family="RobotoMono", weight=FontWeight.W_500)
+
     initial_image = ft.Image(src="assets/result_initial_new.png", width=350, height=350, border_radius=border_radius.all(10))
     result_image = ft.Image(src="assets/result_initial_new.png", width=350, height=350, border_radius=border_radius.all(10), fit=ft.ImageFit.FILL)
     result_image.visible = False
 
-    #result = TextButton(content=result_image, on_click=lambda _: file_picker.pick_files(allow_multiple=False))
     select_image = TextButton(content=initial_image, on_click=lambda _: file_picker.pick_files(allow_multiple=False))
 
-    # Prompt input and display container
     prompt_text = Text("Enter prompt:", font_family="RobotoMono", size=16, weight=FontWeight.W_300, color="#cbddd1")
-    prompt_input = ft.TextField(hint_text="Type your prompt here", width=350, on_submit=lambda e: prompt_display.update())
-    prompt_display = Text("Prompt response will display here", size=16, font_family="RobotoMono", weight=FontWeight.W_300, color="#cbddd1")
+    prompt_input = ft.TextField(
+        hint_text="Type your prompt here", 
+        width=350, 
+        on_submit=lambda e: display_prompt_response()
+    )
+    prompt_display = Text("LLM will respond here.", size=16, font_family="RobotoMono", weight=FontWeight.W_300, color="#cbddd1")
     prompt_container = Container(content=ft.Column([prompt_text, prompt_input, prompt_display]), visible=False)  # Initially hidden
+
+    def display_prompt_response():
+        prompt_display.value = "This is a placeholder response for your prompt."
+        prompt_display.update()
 
     def route_change(e):
         page.views.clear()
@@ -153,14 +156,17 @@ def main(page: Page):
                                             alignment=ft.MainAxisAlignment.CENTER,
                                         ),
                                         width=400,
-                                        padding=padding.only(left=10, top=10)
+                                        padding=padding.only(left=10, top=50)
                                     ),
-                                    select_image,
+                                    Container(
+                                        select_image,
+                                        padding=padding.only(top=100)
+                                    ),
                                     # Right column with prompt input and display
                                     Container(
                                         content=prompt_container,
                                         width=400,
-                                        padding=padding.only(left=10, top=10)
+                                        padding=padding.only(left=10, top=10, bottom=250)
                                     ),
                                 ],
                                 alignment=ft.MainAxisAlignment.CENTER,
