@@ -123,6 +123,9 @@ def main(page: Page):
             prompt_display.content.controls.append(Text("", size=14, font_family="RobotoMono", weight=FontWeight.W_300, color="#cbddd1"))
             prompt_display.update()
             first_prompt_entered = False
+        else:
+            prompt_display.content.controls[-1].value = ""
+            prompt_display.update()
 
         for char in input_text:
             prompt_display.content.controls[-1].value += char
