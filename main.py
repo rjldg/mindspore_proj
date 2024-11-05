@@ -26,7 +26,7 @@ cfg = {
     '_G_STD': 1,
     '_B_STD': 1,
     'num_class': 8, 
-    'model_path': 'C:/Users/Rance/LocalRepositories/mindspore_proj/image_classifier/model_resnet/resnet-ai_2-10_21_86.8.ckpt'
+    'model_path': 'C:/Users/LENOVO/LocalRepositories/mindspore_proj/image_classifier/model_resnet/resnet-ai_2-10_21_86.8.ckpt'
 }
 
 # FOR RAG-BASED FOUNDATIONAL LLM
@@ -95,9 +95,9 @@ def retrieve_and_generate(input, knowledge_base_id, model_arn):
 
     return response
 
-def retrieve_and_generate_response(predicted_class, user_query):
+def retrieve_and_generate_response(predicted_class, confidence_score, user_query):
 
-    response = retrieve_and_generate(f'Tea Leaf Sickness Classification Result: {predicted_class}. {user_query}', knowledge_base_id=knowledge_base_id, model_arn=model_arn)
+    response = retrieve_and_generate(f'Classification Result: {predicted_class}, Confidence Score: {confidence_score}. {user_query}', knowledge_base_id=knowledge_base_id, model_arn=model_arn)
     generated_response = response['output']['text']
 
     return generated_response

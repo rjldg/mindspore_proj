@@ -116,7 +116,7 @@ def main(page: Page):
     def generating_response():
         global first_prompt_entered
 
-        input_text = retrieve_and_generate_response(result_pred.value, prompt_input.value)
+        input_text = retrieve_and_generate_response(result_pred.value, result_conf.value, prompt_input.value)
         type_speed = 0.001
 
         if first_prompt_entered:
